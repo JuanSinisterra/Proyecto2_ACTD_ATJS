@@ -272,6 +272,37 @@ app.layout = html.Div([
 ])
 
 import plotly.graph_objs as go
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from tensorflow import keras
+from tensorflow.keras import layers
+import sys
+from packaging import version
+import sklearn
+import tensorflow as tf
+import matplotlib.pyplot as plt
+
+X = df[["X2","X3","X4","X5","X6","X7","X8","X9","X10","X11","X24","X25","X26","X27","X28","X29"]]
+Y = df['Y']
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+
+model = keras.Sequential([
+    layers.Dense(64, activation='elu', input_shape=(X_train.shape[1],)),
+    layers.Dense(8, activation='tanh'),
+    layers.Dense(1, activation='sigmoid')
+])
+
+model.compile(optimizer='nadam', loss='binary_crossentropy', metrics=['accuracy'])
+
+history = model.fit(X_train, Y_train, epochs=10, batch_size=32, validation_split=0.2)
+
+test_loss, test_accuracy = model.evaluate(X_test, Y_test)
+
+
+
+
+df=pd.read_csv("Datos Modelamiento.csv")
 
 @app.callback(
     Output('output-container99', 'children'),
