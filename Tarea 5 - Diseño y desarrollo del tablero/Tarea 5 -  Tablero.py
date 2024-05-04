@@ -10,6 +10,57 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
+
+import plotly.graph_objs as go
+from sklearn.model_selection import train_test_split
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers # type: ignore
+import sys
+from packaging import version
+import sklearn
+import matplotlib.pyplot as plt
+import pandas as pd
+import shap
+import numpy as np
+
+df=pd.read_csv("Tarea 5 - Diseño y desarrollo del tablero/Datos Modelamiento.csv")
+
+X = df[["X2","X3","X4","X5","X6","X7","X8","X9","X10","X11","X24","X25","X26","X27","X28","X29"]]
+Y = df['Y']
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+
+model = keras.Sequential([
+    layers.Dense(64, activation='elu', input_shape=(X_train.shape[1],)),
+    layers.Dense(8, activation='tanh'),
+    layers.Dense(1, activation='sigmoid')
+])
+
+model.compile(optimizer='nadam', loss='binary_crossentropy', metrics=['accuracy'])
+
+history = model.fit(X_train, Y_train, epochs=10, batch_size=32, validation_split=0.2)
+
+test_loss, test_accuracy = model.evaluate(X_test, Y_test)
+
+explainer = shap.Explainer(model, X_train)
+
+
+shap_values = explainer.shap_values(X_test)
+
+
+mean_abs_shap_values = np.mean(np.abs(shap_values), axis=0)
+feature_names = X.columns
+importance_df = pd.DataFrame({'Feature': feature_names, 'Importance': mean_abs_shap_values})
+importance_df = importance_df.sort_values(by='Importance', ascending=False)
+fig=plt.figure(figsize=(10, 6))
+plt.barh(importance_df['Feature'], importance_df['Importance'], color='skyblue')
+plt.xlabel('Importance')
+plt.ylabel('Feature')
+plt.title('Feature Importance')
+plt.gca().invert_yaxis() 
+
+
 app.layout = html.Div([
     html.Div([
         html.H3("Producto Toma de Decisiones - Riesgo default en Pago de Creditos"),
@@ -264,43 +315,17 @@ app.layout = html.Div([
     html.Hr(),
     html.Div(html.Div(html.H6("Resultados Preliminares la Aplicación", style={'fontWeight': 'bold'}))),
     html.Div(html.Br()),
-    html.Div(id='output-container99',style={'fontSize': '20px'}),
+    html.Div([
+                dcc.Graph(figure=fig)
+    ]),
     html.Hr(),
     html.Div(html.Div(html.H6("Resultados de la Aplicación", style={'fontWeight': 'bold'}))),
     html.Div(id='output-container',style={'fontSize': '20px'}),
     html.Div(id='output-container2',style={'fontSize': '20px'})
 ])
 
-import plotly.graph_objs as go
-from sklearn.model_selection import train_test_split
-import tensorflow as tf
-from tensorflow import keras
-from tensorflow.keras import layers # type: ignore
-import sys
-from packaging import version
-import sklearn
-import matplotlib.pyplot as plt
-import pandas as pd
-import shap
 
-df=pd.read_csv("Tarea 5 - Diseño y desarrollo del tablero/Datos Modelamiento.csv")
 
-X = df[["X2","X3","X4","X5","X6","X7","X8","X9","X10","X11","X24","X25","X26","X27","X28","X29"]]
-Y = df['Y']
-
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
-
-model = keras.Sequential([
-    layers.Dense(64, activation='elu', input_shape=(X_train.shape[1],)),
-    layers.Dense(8, activation='tanh'),
-    layers.Dense(1, activation='sigmoid')
-])
-
-model.compile(optimizer='nadam', loss='binary_crossentropy', metrics=['accuracy'])
-
-history = model.fit(X_train, Y_train, epochs=10, batch_size=32, validation_split=0.2)
-
-test_loss, test_accuracy = model.evaluate(X_test, Y_test)
 
 
 @app.callback(
