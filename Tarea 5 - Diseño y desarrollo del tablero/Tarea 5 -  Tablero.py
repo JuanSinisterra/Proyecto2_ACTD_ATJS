@@ -274,13 +274,15 @@ app.layout = html.Div([
 import plotly.graph_objs as go
 import pandas as pd
 from sklearn.model_selection import train_test_split
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 import sys
 from packaging import version
 import sklearn
-import tensorflow as tf
 import matplotlib.pyplot as plt
+
+df=pd.read_csv("Datos Modelamiento.csv")
 
 X = df[["X2","X3","X4","X5","X6","X7","X8","X9","X10","X11","X24","X25","X26","X27","X28","X29"]]
 Y = df['Y']
@@ -302,7 +304,7 @@ test_loss, test_accuracy = model.evaluate(X_test, Y_test)
 
 
 
-df=pd.read_csv("Datos Modelamiento.csv")
+
 
 @app.callback(
     Output('output-container99', 'children'),
