@@ -272,7 +272,6 @@ app.layout = html.Div([
 ])
 
 import plotly.graph_objs as go
-import pandas as pd
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 from tensorflow import keras
@@ -281,8 +280,10 @@ import sys
 from packaging import version
 import sklearn
 import matplotlib.pyplot as plt
+import pandas as pd
+import shap
 
-df=pd.read_csv("Datos Modelamiento.csv")
+df=pd.read_csv("Tarea 5 - Diseño y desarrollo del tablero/Datos Modelamiento.csv")
 
 X = df[["X2","X3","X4","X5","X6","X7","X8","X9","X10","X11","X24","X25","X26","X27","X28","X29"]]
 Y = df['Y']
@@ -302,20 +303,30 @@ history = model.fit(X_train, Y_train, epochs=10, batch_size=32, validation_split
 test_loss, test_accuracy = model.evaluate(X_test, Y_test)
 
 
-
-
-
-
 @app.callback(
     Output('output-container99', 'children'),
     [
-        Input('incentivo', 'value'),
-        Input('tiempo', 'value'),
-        Input('equipo', 'value'),
-        Input('departamento', 'value')
+        Input('X2', 'value'),
+        Input('X3', 'value'),
+        Input('X4', 'value'),
+        Input('X5', 'value'),
+        Input('X6', 'value'),
+        Input('X7', 'value'),
+        Input('X8', 'value'),
+        Input('X9', 'value'),
+        Input('X10', 'value'),
+        Input('X11', 'value'),
+        Input('X24', 'value'),
+        Input('X25', 'value'),
+        Input('X26', 'value'),
+        Input('X27', 'value'),
+        Input('X28', 'value'),
+        Input('X29', 'value'),
     ]
 )
-def update_output(incentivo, tiempo, equipo, departamento):
+def update_output(X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X24, X25, X26, X27, X28, X29):
+    
+    """
     betas_real = [0.794920, -0.185258, -0.018902, -0.003449, 0.004133, -0.032679, 
          -0.062889, -0.054918, -0.051835, -0.051450, -0.045606, -0.061901, 
          -0.021129, -0.000005, 0.004122]
@@ -347,7 +358,7 @@ def update_output(incentivo, tiempo, equipo, departamento):
     
     layout = go.Layout(title='Efectos de los parámetros en la productividad', xaxis=dict(title='Variables'), yaxis=dict(title='Efectos'))
     fig = go.Figure(data=[bar_plot_real, bar_plot_target], layout=layout)
-    
+    """
     return dcc.Graph(figure=fig)
 
 
