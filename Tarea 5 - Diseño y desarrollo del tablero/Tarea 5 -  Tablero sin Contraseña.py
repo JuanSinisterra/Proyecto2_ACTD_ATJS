@@ -252,7 +252,7 @@ fig2 = go.Figure(data=[go.Bar(x=list(datos_negativos.keys()), y=list(datos_negat
 datos_positivos={}
 
 min_genero = min(dicc_genero.items(), key=lambda x: x[1])
-llave_genero, valor_genero = max_genero
+llave_genero, valor_genero = min_genero
 datos_positivos[llave_genero] = valor_genero
 
 min_educativo = min(dicc_educativo.items(), key=lambda x: x[1])
